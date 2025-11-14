@@ -6,44 +6,47 @@
 /*   By: gaeducas <gaeducas@student.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/14 11:35:53 by gaeducas          #+#    #+#             */
-/*   Updated: 2025/11/14 12:07:48 by gaeducas         ###   ########.fr       */
+/*   Updated: 2025/11/14 21:51:42 by gaeducas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static void	ft_strcat(char const *dest, char const *src)
+size_t	ft_strlen(const char *str)
 {
-	int		i;
-	int		j;
-	char	*dst;
+	size_t	i;
 
 	i = 0;
-	j = 0;
-	dst = (char *)dest;
-	while (dst[j])
-		j++;
-	while (src[i])
-	{
-		dst[j] = src[i];
+	if (!str)
+		return (0);
+	while (str[i])
 		i++;
-		j++;
-	}
-	dst[j] = '\0';
+	return (i);
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	char	*s3;
+	int		i;
+	int		j;
+	char	*dest;
 
-	if (s1 == NULL || s2 == NULL)
+	i = -1;
+	j = -1;
+	if (!s1 && !s2)
 		return (NULL);
-	s3 = ft_calloc(((ft_strlen(s1)) + ft_strlen(s2) + 1), sizeof(char));
-	if (!s3)
+	if (!s1)
+		return (ft_strdup(s2));
+	if (!s2)
+		return (ft_strdup(s1));
+	dest = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!dest)
 		return (NULL);
-	ft_strcat(s3, s1);
-	ft_strcat(s3, s2);
-	return (s3);
+	while (s1[++i])
+		dest[i] = s1[i];
+	while (s2[++j])
+		dest[i + j] = s2[j];
+	dest[i + j] = '\0';
+	return (dest);
 }
 
 char	*ft_strchr(const char *s, int c)
