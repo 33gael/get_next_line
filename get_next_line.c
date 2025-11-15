@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gaeducas <gaeducas@student.fr>             +#+  +:+       +#+        */
+/*   By: gaeducas <gaeducas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/14 11:35:56 by gaeducas          #+#    #+#             */
-/*   Updated: 2025/11/14 21:58:29 by gaeducas         ###   ########.fr       */
+/*   Updated: 2025/11/15 15:07:47 by gaeducas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,51 +46,122 @@ char	*ft_update_size(char *stash)
 	return (line);
 }
 
-char	*get_next_line(int fd)
-{
-	static char	*stash;
-	char		*tmp;
-	char		*buff;
-	char		*line;
-	int			read_bytes;
+// char	*get_next_line(int fd)
+// {
+// 	static char	*stash;
+// 	char		*tmp;
+// 	char		*buff;
+// 	char		*line;
+// 	int			read_bytes;
 
-	read_bytes = 1;
-	if ((BUFFER_SIZE <= 0 || fd < 0) && fd > 1024)
-		return (NULL);
+// 	read_bytes = 1;
+// 	if (fd < 0 || BUFFER_SIZE <= 0)
+// 		return (NULL);
+// 	buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+// 	if (!buff)
+// 		return (NULL);
+// 	while (!stash || (read_bytes > 0 && ft_strchr(stash, '\n') == NULL))
+// 	{
+// 		read_bytes = read(fd, buff, BUFFER_SIZE);
+// 		if (read_bytes < 0)
+// 		{
+// 			free(buff);
+// 			if (stash)
+				// Correction de la fuite : libère le contenu partiellement lu
+// 				free(stash);
+// 			stash = NULL;
+// 			return (NULL);
+// 		}
+// 		if (read_bytes == 0) // Ajouter un break pour la fin de fichier
+// 			break ;
+// 		buff[read_bytes] = '\0';
+// 		tmp = stash;
+// 		stash = ft_strjoin(tmp, buff);
+// 		free(tmp);
+// 		if (!stash) // Sécurité si ft_strjoin échoue
+// 		{
+// 			free(buff);
+// 			return (NULL);
+// 		}
+// 	}
+// 	free(buff);
+// 	if (!stash || stash[0] == '\0')
+// 	{
+// 		free(stash);
+// 		stash = NULL;
+// 		return (NULL);
+// 	}
+// 	line = ft_extract_line(stash);
+// 	if (!line)
+// 	{
+// 		free(stash); // Libérer stash si l'extraction échoue
+// 		stash = NULL;
+// 		return (NULL);
+// 	}
+// 	tmp = ft_update_size(stash);
+// 	stash = tmp;
+// 	return (line);
+// }
+
+static char	*ft_read_loop(int fd, char *stash)
+{
+	char	*buff;
+	char	*tmp;
+	int		read_bytes;
+
 	buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buff)
-		return (NULL);
-	while (read_bytes > 0 && ft_strchr(stash, '\n') == NULL)
+		return (free(stash), NULL);
+	read_bytes = 1;
+	while (!stash || (read_bytes > 0 && ft_strchr(stash, '\n') == NULL))
 	{
-		read_bytes = (int)read(fd, stash, BUFFER_SIZE + 1);
-		if (read_bytes < 0)
-		{
-			if (!stash)
-			{
-				free(stash);
-				stash = NULL;
-			}
-			return (NULL);
-		}
+		read_bytes = read(fd, buff, BUFFER_SIZE);
+		if (read_bytes == -1)
+			return (free(buff), free(stash), NULL);
+		if (read_bytes == 0)
+			break ;
 		buff[read_bytes] = '\0';
 		tmp = stash;
 		stash = ft_strjoin(tmp, buff);
 		free(tmp);
+		if (!stash)
+			return (free(buff), NULL);
 	}
-	line = ft_extract_line(stash);
-	if (!line)
+	free(buff);
+	return (stash);
+}
+
+static char	*ft_finalize(char **stash)
+{
+	char	*line;
+	char	*tmp;
+
+	if (!*stash || **stash == '\0')
+	{
+		free(*stash);
+		*stash = NULL;
 		return (NULL);
-	stash = ft_update_size(stash);
-	free(stash);
+	}
+	line = ft_extract_line(*stash);
+	if (!line)
+	{
+		free(*stash);
+		*stash = NULL;
+		return (NULL);
+	}
+	tmp = ft_update_size(*stash);
+	*stash = tmp;
 	return (line);
 }
 
-/*
-appeler fonction chercher la ligne
-secu
-extraire (modifier stash)
-return line
+char	*get_next_line(int fd)
+{
+	static char	*stash;
 
-
-edit join (ou pas)
-*/
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	stash = ft_read_loop(fd, stash);
+	if (!stash)
+		return (NULL);
+	return (ft_finalize(&stash));
+}
