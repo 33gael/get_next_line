@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gaeducas <gaeducas@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gaeducas <gaeducas@student.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/14 11:35:56 by gaeducas          #+#    #+#             */
-/*   Updated: 2025/11/15 15:07:47 by gaeducas         ###   ########.fr       */
+/*   Updated: 2025/11/16 10:53:11 by gaeducas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ char	*ft_update_size(char *stash)
 // 		{
 // 			free(buff);
 // 			if (stash)
-				// Correction de la fuite : libère le contenu partiellement lu
+// Correction de la fuite : libère le contenu partiellement lu
 // 				free(stash);
 // 			stash = NULL;
 // 			return (NULL);
@@ -157,11 +157,13 @@ static char	*ft_finalize(char **stash)
 char	*get_next_line(int fd)
 {
 	static char	*stash;
+	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	stash = ft_read_loop(fd, stash);
 	if (!stash)
 		return (NULL);
-	return (ft_finalize(&stash));
+	line = ft_finalize(&stash);
+	return (line);
 }

@@ -6,13 +6,13 @@
 /*   By: gaeducas <gaeducas@student.fr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/14 11:35:53 by gaeducas          #+#    #+#             */
-/*   Updated: 2025/11/14 21:51:42 by gaeducas         ###   ########.fr       */
+/*   Updated: 2025/11/16 10:39:46 by gaeducas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_strlen(const char *str)
+size_t	ft_strlen(char *str)
 {
 	size_t	i;
 
@@ -24,50 +24,7 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	int		i;
-	int		j;
-	char	*dest;
-
-	i = -1;
-	j = -1;
-	if (!s1 && !s2)
-		return (NULL);
-	if (!s1)
-		return (ft_strdup(s2));
-	if (!s2)
-		return (ft_strdup(s1));
-	dest = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
-	if (!dest)
-		return (NULL);
-	while (s1[++i])
-		dest[i] = s1[i];
-	while (s2[++j])
-		dest[i + j] = s2[j];
-	dest[i + j] = '\0';
-	return (dest);
-}
-
-char	*ft_strchr(const char *s, int c)
-{
-	int	i;
-
-	i = 0;
-	if (!s)
-		return (NULL);
-	while (s[i])
-	{
-		if (s[i] == (unsigned char)c)
-			return ((char *)s + i);
-		i++;
-	}
-	if ((unsigned char)c == 0 && !s[i])
-		return ((char *)s + i);
-	return (NULL);
-}
-
-char	*ft_strdup(const char *src)
+char	*ft_strdup(char *src)
 {
 	int		i;
 	char	*dest;
@@ -90,19 +47,62 @@ char	*ft_strdup(const char *src)
 	return (dest);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_strjoin(char *s1, char *s2)
+{
+	char	*line;
+	int		i;
+	int		j;
+
+	line = malloc((sizeof(char) * ((ft_strlen(s1) + 1) + ft_strlen(s2))));
+	if (!line)
+		return (NULL);
+	i = 0;
+	while (s1 && s1[i])
+	{
+		line[i] = s1[i];
+		i++;
+	}
+	j = 0;
+	while (s2 && s2[j])
+	{
+		line[i + j] = s2[j];
+		j++;
+	}
+	line[i + j] = '\0';
+	return (line);
+}
+
+char	*ft_strchr(char *s, int c)
+{
+	int	i;
+
+	i = 0;
+	if (!s)
+		return (NULL);
+	while (s[i])
+	{
+		if (s[i] == (unsigned char)c)
+			return ((char *)s + i);
+		i++;
+	}
+	if ((unsigned char)c == 0 && !s[i])
+		return ((char *)s + i);
+	return (NULL);
+}
+
+char	*ft_substr(char *s, unsigned int start, size_t len)
 {
 	size_t	i;
 	char	*sub;
 
-	if (s == NULL)
-		return (NULL);
-	i = 0;
 	if (start >= ft_strlen(s))
 	{
 		sub = ft_strdup("");
 		return (sub);
 	}
+	if (!s)
+		return (NULL);
+	i = 0;
 	if (len > ft_strlen(s) - start)
 		len = ft_strlen(s) - start;
 	if (s[i] == '\0')
