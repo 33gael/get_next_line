@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gaeducas <gaeducas@student.fr>             +#+  +:+       +#+        */
+/*   By: gaeducas <gaeducas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/14 11:35:53 by gaeducas          #+#    #+#             */
-/*   Updated: 2025/11/16 10:39:46 by gaeducas         ###   ########.fr       */
+/*   Updated: 2025/11/16 11:19:58 by gaeducas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,10 +103,10 @@ char	*ft_substr(char *s, unsigned int start, size_t len)
 	if (!s)
 		return (NULL);
 	i = 0;
-	if (len > ft_strlen(s) - start)
-		len = ft_strlen(s) - start;
 	if (s[i] == '\0')
 		return (NULL);
+	if (len > ft_strlen(s) - start)
+		len = ft_strlen(s) - start;
 	sub = malloc(sizeof(char) * (len + 1));
 	if (!sub)
 		return (NULL);

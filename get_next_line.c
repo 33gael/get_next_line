@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gaeducas <gaeducas@student.fr>             +#+  +:+       +#+        */
+/*   By: gaeducas <gaeducas@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/14 11:35:56 by gaeducas          #+#    #+#             */
-/*   Updated: 2025/11/16 10:53:11 by gaeducas         ###   ########.fr       */
+/*   Updated: 2025/11/16 11:50:05 by gaeducas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ char	*ft_update_size(char *stash)
 // 	return (line);
 // }
 
-static char	*ft_read_loop(int fd, char *stash)
+static char	*ft_read_loop(int fd, char **stash)
 {
 	char	*buff;
 	char	*tmp;
@@ -111,24 +111,24 @@ static char	*ft_read_loop(int fd, char *stash)
 
 	buff = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buff)
-		return (free(stash), NULL);
+		return (free(*stash), NULL);
 	read_bytes = 1;
-	while (!stash || (read_bytes > 0 && ft_strchr(stash, '\n') == NULL))
+	while (!stash || (read_bytes > 0 && ft_strchr(*stash, '\n') == NULL))
 	{
 		read_bytes = read(fd, buff, BUFFER_SIZE);
 		if (read_bytes == -1)
-			return (free(buff), free(stash), NULL);
+			return (free(buff), free(*stash), NULL);
 		if (read_bytes == 0)
 			break ;
 		buff[read_bytes] = '\0';
-		tmp = stash;
-		stash = ft_strjoin(tmp, buff);
+		tmp = *stash;
+		*stash = ft_strjoin(tmp, buff);
 		free(tmp);
-		if (!stash)
+		if (!*stash)
 			return (free(buff), NULL);
 	}
 	free(buff);
-	return (stash);
+	return (*stash);
 }
 
 static char	*ft_finalize(char **stash)
@@ -161,9 +161,26 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	stash = ft_read_loop(fd, stash);
+	stash = ft_read_loop(fd, &stash);
 	if (!stash)
 		return (NULL);
 	line = ft_finalize(&stash);
 	return (line);
+}
+
+#include <stdio.h>
+int main()
+{
+	char *line;
+	int fd;
+	fd = open("giant_line.txt", O_RDONLY);
+	while (1)
+	{
+		line = get_next_line(fd);
+		printf("%s", line);
+		if (!line)
+			break;
+		free(line);
+	}
+	close(fd);
 }
